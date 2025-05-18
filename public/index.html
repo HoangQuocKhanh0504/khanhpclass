@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quản lý phòng học KHANHPC</title>
+  <link rel="icon" type="image/png" href="GD.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-light: #3b82f6;
+  --hover: #1d4ed8;
+  --gray-light: #f3f4f6;
+  --gray-medium: #6b7280;
+  --gray-dark: #111827;
+  --border: #d1d5db;
+  --shadow-light: 0 8px 16px rgba(37, 99, 235, 0.2);
+  --shadow-strong: 0 16px 48px rgba(37, 99, 235, 0.3);
+  --radius: 16px;
+  --font-family: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background: linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%);
+  margin: 0;
+  padding: 40px 20px;
+  color: var(--gray-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+h2, h3 {
+  margin-bottom: 24px;
+  font-weight: 700;
+  color: var(--gray-dark);
+  letter-spacing: 0.02em;
+}
+
+.card {
+  background: #fff;
+  padding: 36px 32px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  max-width: 640px;
+  width: 100%;
+  margin-bottom: 36px;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-strong);
+}
+
+button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px 32px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  user-select: none;
+}
+
+button:hover {
+  background-color: var(--hover);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(29, 78, 216, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.5);
+}
+
+input {
+  width: 100%;
+  padding: 16px 18px;
+  margin-bottom: 24px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gray-dark);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  outline-offset: 2px;
+}
+
+input::placeholder {
+  color: var(--gray-medium);
+  font-weight: 400;
+}
+
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
+  outline: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#create-room-msg, #join-room-msg {
+  min-height: 24px;
+  margin-top: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+#create-room-msg {
+  color: #dc2626; /* Màu đỏ lỗi mặc định */
+}
+
+#create-room-msg.success {
+  color: #16a34a; /* Màu xanh thành công */
+}
+
+#join-room-msg {
+  color: #dc2626;
+}
+
+#join-room-msg.success {
+  color: #16a34a;
+}
+
+#students-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-top: 30px;
+  justify-content: center;
+}
+
+.student-box {
+  width: 200px;
+  height: 150px;
+  border-radius: 18px;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.08);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.student-box:hover {
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.3);
+  transform: translateY(-5px);
+}
+
+.student-name {
+  background: linear-gradient(180deg, transparent, rgba(37, 99, 235, 0.85));
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 8px 0;
+  user-select: none;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  flex-grow: 1;
+}
+
+#share-screen-area {
+  font-style: italic;
+  margin-top: 30px;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 18px;
+  text-align: center;
+}
+
+#modal-screen {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#modal-screen > div {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: #111;
+  border-radius: var(--radius);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#modal-canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border-radius: var(--radius);
+}
+
+#modal-student-name {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px 24px;
+  border-radius: 16px;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.02em;
+}
+
+</style>
+</head>
+<body>
+
+  <div id="role-selection" class="card">
+    <h2>Chọn vai trò</h2>
+    <button id="btn-teacher">Giáo viên</button>
+    <button id="btn-student" style="margin-left: 16px;">Học sinh</button>
+  </div>
+
+  <div id="teacher-area" class="card hidden">
+    <h2>Quản lý phòng - Giáo viên</h2>
+    <input id="room-name" placeholder="Tên phòng" />
+    <input id="room-code" placeholder="Mã phòng" />
+    <input id="max-students" type="number" placeholder="Giới hạn số học sinh" min="1" />
+    <button id="create-room-btn">Tạo phòng</button>
+    <p id="create-room-msg"></p>
+
+    <div id="manage-room" class="hidden">
+      <h3> Danh sách máy hoạt động ở phòng: <span id="manage-room-name"></span></h3>
+      <div id="students-container"></div>
+    </div>
+  </div>
+
+  <div id="student-area" class="card hidden">
+    <h2>Tham gia phòng - Học sinh</h2>
+    <input id="student-name" placeholder="Tên học sinh" />
+    <input id="student-room-name" placeholder="Tên phòng" />
+    <input id="student-room-code" placeholder="Mã phòng" />
+    <button id="join-room-btn">Tham gia phòng</button>
+    <p id="join-room-msg"></p>
+    <div id="share-screen-area" class="hidden">
+      <h3>Chia sẻ màn hình đang hoạt động...</h3>
+    </div>
+  </div>
+
+  <div id="modal-screen">
+    <div>
+      <canvas id="modal-canvas"></canvas>
+      <div id="modal-student-name"></div>
+    </div>
+  </div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  // UI
+  const roleSelection = document.getElementById('role-selection');
+  const btnTeacher = document.getElementById('btn-teacher');
+  const btnStudent = document.getElementById('btn-student');
+
+  const teacherArea = document.getElementById('teacher-area');
+  const studentArea = document.getElementById('student-area');
+
+  const createRoomBtn = document.getElementById('create-room-btn');
+  const createRoomMsg = document.getElementById('create-room-msg');
+  const roomNameInput = document.getElementById('room-name');
+  const roomCodeInput = document.getElementById('room-code');
+  const maxStudentsInput = document.getElementById('max-students');
+
+  const manageRoom = document.getElementById('manage-room');
+  const manageRoomName = document.getElementById('manage-room-name');
+  const studentsContainer = document.getElementById('students-container');
+
+  const joinRoomBtn = document.getElementById('join-room-btn');
+  const joinRoomMsg = document.getElementById('join-room-msg');
+  const studentNameInput = document.getElementById('student-name');
+  const studentRoomNameInput = document.getElementById('student-room-name');
+  const studentRoomCodeInput = document.getElementById('student-room-code');
+
+  let currentRoom = '';
+  let studentName = '';
+
+  // Chọn vai trò
+  btnTeacher.onclick = () => {
+    roleSelection.classList.add('hidden');
+    teacherArea.classList.remove('hidden');
+  };
+  btnStudent.onclick = () => {
+    roleSelection.classList.add('hidden');
+    studentArea.classList.remove('hidden');
+  };
+
+  // Tạo phòng (gửi POST lên server)
+  createRoomBtn.onclick = () => {
+    const roomName = roomNameInput.value.trim();
+    const roomCode = roomCodeInput.value.trim();
+    const maxStudents = maxStudentsInput.value.trim();
+
+    if (!roomName || !roomCode || !maxStudents) {
+      createRoomMsg.textContent = 'Vui lòng nhập đủ thông tin.';
+      createRoomMsg.style.color = 'red';
+      return;
+    }
+    fetch('/create-room', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ roomName, roomCode, maxStudents })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        createRoomMsg.textContent = data.error;
+        createRoomMsg.style.color = 'red';
+      } else {
+        createRoomMsg.style.color = 'green';
+        createRoomMsg.textContent = 'Tạo phòng thành công!';
+        currentRoom = roomName;
+        manageRoomName.textContent = currentRoom;
+        manageRoom.classList.remove('hidden');
+        joinTeacherRoom(roomName, roomCode);
+      }
+    })
+    .catch(() => {
+      createRoomMsg.textContent = 'Lỗi server, vui lòng thử lại.';
+      createRoomMsg.style.color = 'red';
+    });
+  };
+
+  function joinTeacherRoom(roomName, roomCode) {
+    socket.emit('teacher-join', { roomName, roomCode });
+  }
+
+  // Giáo viên nhận danh sách học sinh
+  socket.on('students-list', list => {
+    studentsContainer.innerHTML = '';
+    list.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'student-box';
+      div.id = 'student-' + s.id;
+      div.innerHTML = `
+        <div class="student-name">${s.name}</div>
+        <canvas width="150" height="120"></canvas>
+      `;
+      studentsContainer.appendChild(div);
+    });
+  });
+
+  // Giáo viên nhận ảnh cập nhật của học sinh
+  socket.on('screen-update', data => {
+    const { id, image } = data;
+    const studentDiv = document.getElementById('student-' + id);
+    if (studentDiv) {
+      const canvas = studentDiv.querySelector('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = image;
+    }
+  });
+// Khi học sinh ngắt chia sẻ màn hình hoặc rời khỏi phòng
+socket.on('student-left', studentId => {
+  const studentDiv = document.getElementById('student-' + studentId);
+  if (studentDiv) {
+    studentDiv.remove(); // Xóa ô nhỏ của học sinh đó
+  }
+});
+// Khi học sinh disconnect
+socket.on('disconnect', () => {
+  if (socket.role === 'student') {
+    io.to(socket.roomName).emit('student-left', socket.id);
+  }
+});
+
+  // Học sinh tham gia phòng
+  joinRoomBtn.onclick = () => {
+    const sName = studentNameInput.value.trim();
+    const rName = studentRoomNameInput.value.trim();
+    const rCode = studentRoomCodeInput.value.trim();
+
+    if (!sName || !rName || !rCode) {
+      joinRoomMsg.textContent = 'Vui lòng nhập đủ thông tin.';
+      joinRoomMsg.style.color = 'red';
+      return;
+    }
+
+    studentName = sName;
+    socket.emit('student-join', { roomName: rName, roomCode: rCode, studentName });
+
+    joinRoomMsg.style.color = 'green';
+    joinRoomMsg.textContent = 'Đang tham gia phòng...';
+
+    // Chờ server xác nhận và bắt đầu chia sẻ màn hình
+  };
+
+  socket.on('error-msg', msg => {
+    joinRoomMsg.style.color = 'red';
+    joinRoomMsg.textContent = msg;
+  });
+
+  // Khi học sinh join thành công thì bắt đầu chia sẻ màn hình
+  socket.on('students-list', list => {
+    if (studentName) {
+      const found = list.find(s => s.name === studentName);
+      if (found) {
+        startShareScreen();
+        document.getElementById('share-screen-area').classList.remove('hidden');
+      }
+    }
+  });
+
+  async function startShareScreen() {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const sendInterval = 60; // 0.1 giây
+
+      async function sendFrame() {
+        if (video.videoWidth === 0 || video.videoHeight === 0) {
+          setTimeout(sendFrame, sendInterval);
+          return;
+        }
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL('image/webp', 0.1);
+        socket.emit('screen-data', { roomName: studentRoomNameInput.value.trim(), image: imageData, name: studentName });
+        setTimeout(sendFrame, sendInterval);
+      }
+
+      sendFrame();
+
+    stream.getVideoTracks()[0].addEventListener('ended', () => {
+    document.getElementById('share-screen-area').classList.add('hidden');
+    joinRoomMsg.textContent = 'Bạn đã dừng chia sẻ màn hình.';
+    joinRoomMsg.style.color = 'red';
+
+    // Gửi thông báo đến server rằng học sinh dừng chia sẻ
+    socket.emit('student-stop', {
+        roomName: studentRoomNameInput.value.trim(),
+        studentName
+    });
+    });
+
+
+    } catch (err) {
+      joinRoomMsg.textContent = 'Không thể chia sẻ màn hình: ' + err.message;
+      joinRoomMsg.style.color = 'red';
+    }
+  }
+  // Biến lưu canvas và ctx modal
+const modalScreen = document.getElementById('modal-screen');
+const modalCanvas = document.getElementById('modal-canvas');
+const modalCtx = modalCanvas.getContext('2d');
+const modalStudentName = document.getElementById('modal-student-name');
+
+let currentModalId = null;
+
+// Khi nhận hình cập nhật của học sinh
+socket.on('screen-update', data => {
+  const { id, image, name } = data;
+  const studentDiv = document.getElementById('student-' + id);
+  if (studentDiv) {
+    const canvas = studentDiv.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Nếu đang mở modal của học sinh này thì cập nhật luôn modal
+      if (currentModalId === id) {
+        modalCanvas.width = img.width;
+        modalCanvas.height = img.height;
+        modalCtx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+        modalCtx.drawImage(img, 0, 0);
+      }
+    };
+    img.src = image;
+  }
+});
+
+// Xử lý click vào ô nhỏ để mở modal
+studentsContainer.addEventListener('click', e => {
+  const studentBox = e.target.closest('.student-box');
+  if (!studentBox) return;
+
+  const id = studentBox.id.replace('student-', '');
+  currentModalId = id;
+
+  // Lấy canvas nhỏ hiện tại của học sinh
+  const smallCanvas = studentBox.querySelector('canvas');
+  if (smallCanvas) {
+    // Lấy dữ liệu ảnh từ canvas nhỏ
+    const imgData = smallCanvas.toDataURL();
+
+    const img = new Image();
+    img.onload = () => {
+      modalCanvas.width = img.width;
+      modalCanvas.height = img.height;
+      modalCtx.clearRect(0, 0, modalCanvas.width, modalCanvas.height);
+      modalCtx.drawImage(img, 0, 0);
+    };
+    img.src = imgData;
+  }
+
+  // Hiển thị tên học sinh
+  const studentNameDiv = studentBox.querySelector('.student-name');
+  modalStudentName.textContent = studentNameDiv ? studentNameDiv.textContent : '';
+
+  // Hiển thị modal
+  modalScreen.style.display = 'flex';
+});
+
+// Đóng modal khi click ra ngoài canvas hoặc modal
+modalScreen.addEventListener('click', e => {
+  if (e.target === modalScreen) {
+    modalScreen.style.display = 'none';
+    currentModalId = null;
+  }
+});
+io.on('connection', socket => {
+  // Khi học sinh join phòng
+  socket.on('join-room', roomId => {
+    socket.join(roomId);
+    if (!rooms[roomId]) {
+      rooms[roomId] = { students: [] };
+    }
+    rooms[roomId].students.push(socket.id);
+  });
+
+  // Khi học sinh rời phòng hoặc disconnect
+  function leaveRooms() {
+    for (const roomId in rooms) {
+      const index = rooms[roomId].students.indexOf(socket.id);
+      if (index !== -1) {
+        rooms[roomId].students.splice(index, 1);
+        // Nếu phòng trống, xóa phòng
+        if (rooms[roomId].students.length === 0) {
+          delete rooms[roomId];
+          console.log(`Phòng ${roomId} đã được xóa vì không còn học sinh`);
+          // Nếu muốn gửi cập nhật cho giáo viên
+          io.emit('update-room-list', Object.keys(rooms));
+        }
+      }
+    }
+  }
+
+  socket.on('leave-room', () => {
+    leaveRooms();
+  });
+
+  socket.on('disconnect', () => {
+    leaveRooms();
+  });
+});
+window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();  // Bắt buộc phải gọi để kích hoạt hộp thoại
+    e.returnValue = '';  // Giá trị rỗng để trình duyệt hiện cảnh báo mặc định
+});
+
+</script>
+</body>
+</html>
