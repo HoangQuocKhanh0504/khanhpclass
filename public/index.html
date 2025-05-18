@@ -458,7 +458,7 @@ socket.on('disconnect', () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
-      const sendInterval = 60; // 0.1 giây
+      const sendInterval = 16; // 60 fps
 
       async function sendFrame() {
         if (video.videoWidth === 0 || video.videoHeight === 0) {
